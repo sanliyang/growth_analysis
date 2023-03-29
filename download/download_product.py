@@ -7,3 +7,12 @@
 @create->time 2023/3/29-10:29
 @desc->
 ++++++++++++++++++++++++++++++++++++++ """
+
+
+class DownloadProduct:
+    def __init__(self):
+        self.token = None
+
+    def get_token(self):
+        with open('./base/token.txt', 'r') as f:
+            self.token = f.read()
