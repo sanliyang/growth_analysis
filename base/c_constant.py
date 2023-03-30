@@ -20,3 +20,4 @@ class CConstant:
     Modis_MOD09GQ_Valid_Range_Max = 16000  # 像元最大有效值
     Modis_MOD09GQ_Valid_Range_Min = -100  # 像元最小有效值
     Modis_MOD09GQ_Fill_Value = -28672  # 栅格填充值
+    Modis_MOD09GQ_OutPut_NoData_Value = 0  # MOD09GQ 计算为NDVI时的nodata值
