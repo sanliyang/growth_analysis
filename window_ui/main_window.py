@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os.path
+from functools import partial
 
 # Form implementation generated from reading ui file 'grow_new.ui'
 #
@@ -12,7 +14,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from download.download_product import DownloadProduct
 from download.search_product import SearchProduct
-from multiprocessing import Pool
+from window_ui.download_thread import DownloadThread
+from window_ui.search_thread import SearchThread
 
 
 class Ui_MainWindow(object):
@@ -25,6 +28,14 @@ class Ui_MainWindow(object):
         self.product = None
         self.download_url = list()
         self.thread_num = 6
+        # 放在__init__(self):下，主窗口类实例，初始化时加载
+        self.my_thread1 = DownloadThread()
+        self.my_thread1.my_str.connect(self.get_sin_out_download)
+
+        self.my_thread2 = SearchThread()
+        self.my_thread2.my_list.connect(self.get_sin_out_search)
+
+        self.flag = 1
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -65,7 +76,7 @@ class Ui_MainWindow(object):
         self.textEdit_5.setGeometry(QtCore.QRect(287, 120, 104, 41))
         self.textEdit_5.setObjectName("textEdit_5")
         self.label_11 = QtWidgets.QLabel(self.tab)
-        self.label_11.setGeometry(QtCore.QRect(240, 570, 211, 51))
+        self.label_11.setGeometry(QtCore.QRect(240, 580, 280, 51))
         self.label_11.setObjectName("label_11")
         self.pushButton_4 = QtWidgets.QPushButton(self.tab)
         self.pushButton_4.setGeometry(QtCore.QRect(410, 480, 171, 51))
@@ -177,8 +188,37 @@ class Ui_MainWindow(object):
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.pushButton_6.clicked.connect(self.search_product)
-        self.pushButton_2.clicked.connect(self.download_files)
+        self.pushButton_6.clicked.connect(lambda: self.start_search_thread())
+        # self.pushButton_2.clicked.connect(self.download_files)
+        self.pushButton_2.clicked.connect(lambda: self.start_download_thread())
+
+    def start_download_thread(self):
+        """
+        启动线程
+        :return:
+        """
+        try:
+            # self.textBrowser_3.setText(str(len(self.download_url)))
+            self.textBrowser_2.setPlainText("")
+            self.textBrowser_2.insertPlainText("正在开始下载数据...")
+            self.my_thread1.set_file_url(self.download_url)
+            self.my_thread1.start()
+        except Exception as error:
+            print(error)
+
+    def start_search_thread(self):
+        """
+        启动线程
+        :return:
+        """
+        try:
+            self.get_search_params()
+
+            self.my_thread2.set_params(self.start_date, self.end_date, self.spatial_tuple, self.product)
+            self.my_thread2.start()
+            self.textBrowser_2.insertPlainText("所有下载均已完成，请查收！\n")
+        except Exception as error:
+            print(error)
 
     def get_search_params(self):
         self.start_date = self.dateEdit.date().toString('yyyy-MM-dd')
@@ -198,21 +238,59 @@ class Ui_MainWindow(object):
         print(self.satellite)
         print(self.product)
 
-    def search_product(self):
-        self.get_search_params()
-        sp = SearchProduct(self.start_date, self.end_date, self.spatial_tuple, self.product)
-        self.download_url = sp.search_product()
+    # def search_product(self):
+    #     self.get_search_params()
+    #     sp = SearchProduct(self.start_date, self.end_date, self.spatial_tuple, self.product)
+    #     self.download_url = sp.search_product()
+    #     # 在进行检索展示之前需要先清空textbrowser 避免上次的检索结果对本次检索结果造成影响
+    #     self.textBrowser_3.setPlainText("")
+    #     self.textBrowser_2.setPlainText("")
+    #     # 这里需要将检索到的数据展示到右侧的 textbrow 中 以遍用户进行查看
+    #     self.textBrowser_2.insertPlainText(f"已经检索到了[{len(self.download_url)}]景数据..." + "\n")
+    #     self.textBrowser_3.setPlainText(str(len(self.download_url)))
+    #     for download_url in self.download_url:
+    #         self.textBrowser_2.insertPlainText(os.path.basename(download_url) + "\n")
 
-    def download_files(self):
-        dp = DownloadProduct()
-        dp.get_token()
-        dp.set_headers()
-        self.textBrowser_3.setText(str(len(self.download_url)))
-        if len(self.download_url) < self.thread_num:
-            pool = Pool(len(self.download_url))
-        else:
-            pool = Pool(self.thread_num)
-        pool.map(dp.download_file, self.download_url)
+    # def download_files(self):
+    #     self.textBrowser_3.setText(str(len(self.download_url)))
+    #     print("开始下载数据喽...")
+    #     self.textBrowser_2.setPlainText("")
+    #     self.textBrowser_2.insertPlainText("正在开始下载数据...")
+    #     flag = 1
+    #     for file_url in self.download_url:
+    #         self.textBrowser_2.insertPlainText(f"[{file_url.split('/')[-1]}]开始下载...")
+    #         # dp.download_file(file_url)
+    #         up_line = self.textBrowser_2.textCursor()
+    #         up_line.select(QtGui.QTextCursor.LineUnderCursor)
+    #         up_line.removeSelectedText()
+    #         self.textBrowser.moveCursor(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.MoveAnchor)
+    #         self.textBrowser_2.insertPlainText(f"[{file_url.split('/')[-1]}]下载完成！\n")
+    #         self.textBrowser_4.setPlainText(str(flag))
+    #         flag += 1
+
+    def get_sin_out_download(self, out_str):
+        """
+        :param out_str:
+        :return:
+        """
+        self.textBrowser_2.insertPlainText(f"[{out_str}]下载完成！\n")
+        self.textBrowser_4.setPlainText(str(self.flag))
+        self.flag += 1
+
+    def get_sin_out_search(self, out_str):
+        """
+        :param out_str:
+        :return:
+        """
+        self.download_url = out_str
+        # 在进行检索展示之前需要先清空textbrowser 避免上次的检索结果对本次检索结果造成影响
+        self.textBrowser_3.setPlainText("")
+        self.textBrowser_2.setPlainText("")
+        # 这里需要将检索到的数据展示到右侧的 textbrow 中 以遍用户进行查看
+        self.textBrowser_2.insertPlainText(f"已经检索到了[{len(self.download_url)}]景数据..." + "\n")
+        self.textBrowser_3.setPlainText(str(len(self.download_url)))
+        for download_url in self.download_url:
+            self.textBrowser_2.insertPlainText(os.path.basename(download_url) + "\n")
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

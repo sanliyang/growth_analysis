@@ -25,19 +25,26 @@ class SearchProduct:
         self.product = product
 
     def search_product(self):
+        print("开始检索喽...")
         download_url = []
         session = requests.Session()
         rp = session.get(url=self.search_url)
+        print("1")
         if rp.status_code == 200:
             rp_list = json.loads(rp.text)
             for rp in rp_list:
+                print("2")
                 esdt = rp['ESDT']
-                if esdt == product:
+                # esdt = rp["MODIS:TERRA"]
+                print(esdt)
+                print(self.product)
+                if esdt == self.product:
                     col = rp['collections'][0]
                     search_end_url = f'/product={self.product}&collection={col}' \
                                      f'&dateRanges={self.time_start_date}..{self.time_end_date}&areaOfInterest' \
                                      f'=x{self.spatial_tuple[0]}y{self.spatial_tuple[1]},x{self.spatial_tuple[2]}y' \
                                      f'{self.spatial_tuple[3]}&dayCoverage=true&dnboundCoverage=true'
+                    print(search_end_url)
                     search_url = self.base_url + search_end_url
                     rp_d = session.get(search_url)
                     if rp_d.text is not None:
