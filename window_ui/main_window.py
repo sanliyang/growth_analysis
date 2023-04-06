@@ -11,9 +11,6 @@ from functools import partial
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
-from download.download_product import DownloadProduct
-from download.search_product import SearchProduct
 from window_ui.download_thread import DownloadThread
 from window_ui.search_thread import SearchThread
 
@@ -203,6 +200,7 @@ class Ui_MainWindow(object):
             self.textBrowser_2.insertPlainText("正在开始下载数据...")
             self.my_thread1.set_file_url(self.download_url)
             self.my_thread1.start()
+            self.textBrowser_2.insertPlainText("所有下载均已完成，请查收！\n")
         except Exception as error:
             print(error)
 
@@ -216,7 +214,7 @@ class Ui_MainWindow(object):
 
             self.my_thread2.set_params(self.start_date, self.end_date, self.spatial_tuple, self.product)
             self.my_thread2.start()
-            self.textBrowser_2.insertPlainText("所有下载均已完成，请查收！\n")
+
         except Exception as error:
             print(error)
 

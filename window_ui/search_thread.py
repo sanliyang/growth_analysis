@@ -9,7 +9,6 @@
 ++++++++++++++++++++++++++++++++++++++ """
 from PyQt5.QtCore import QThread, pyqtSignal
 
-from download.download_product import DownloadProduct
 from download.search_product import SearchProduct
 
 
