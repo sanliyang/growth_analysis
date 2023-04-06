@@ -34,3 +34,6 @@ This project exists thanks to all the people who contribute
     </td></tr>
 </table>
 <!-- readme: collaborators,contributors -end -->
+
+## 开源协议
+[GPL](https://github.com/sanliyang/growth_analysis/blob/main/LICENSE)© sanliyang
