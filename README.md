@@ -16,4 +16,21 @@ git clone https://github.com/sanliyang/growth_analysis.git
 ## Contributors
 This project exists thanks to all the people who contribute
 <!-- readme: collaborators,contributors -start -->
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/sanliyang">
+            <img src="https://avatars.githubusercontent.com/u/46244716?v=4" width="100;" alt="sanliyang"/>
+            <br />
+            <sub><b>Sanliyang</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/SharkSyl">
+            <img src="https://avatars.githubusercontent.com/u/86356432?v=4" width="100;" alt="SharkSyl"/>
+            <br />
+            <sub><b>SharkSyl</b></sub>
+        </a>
+    </td></tr>
+</table>
 <!-- readme: collaborators,contributors -end -->
