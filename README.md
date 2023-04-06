@@ -1,4 +1,8 @@
-# growth_analysis
+# growth_analysis{ignore=true}
+
+## 目录{ignore=true}
+[TOC]
+
 ## 项目背景
 - 实现对modis数据的检索下载，并对下载下来的数据进行按天处理，然后计算NDVI植被指数
 ## 安装
@@ -13,8 +17,26 @@ git clone https://github.com/sanliyang/growth_analysis.git
     - 将本项目中的setup文件夹下载到本地
     - 双击运行setup/setup.exe进行安装
 
-## Contributors
-This project exists thanks to all the people who contribute
+## 相关项目
+暂无
+
+## 主要项目负责人
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/sanliyang">
+            <img src="https://avatars.githubusercontent.com/u/46244716?v=4" width="100;" alt="sanliyang"/>
+            <br />
+            <sub><b>Sanliyang</b></sub>
+        </a>
+    </td>
+</tr>
+</table>
+
+## 参与贡献方式
+提交PR申请，我会视情况而定
+### 贡献人员
+感谢所有贡献的人
 <!-- readme: collaborators,contributors -start -->
 <table>
 <tr>
