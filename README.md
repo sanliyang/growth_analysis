@@ -11,9 +11,9 @@ git clone https://github.com/sanliyang/growth_analysis.git
 
 2. 使用一键式安装引导程序安装
     - 将本项目中的setup文件夹下载到本地
-    - 单机setup/setup.exe进行安装
+    - 双击运行setup/setup.exe进行安装
 
 ## Contributors
 This project exists thanks to all the people who contribute
-<!-- ALL-CONTRIBUTORS-LIST: START - Do not remove or modify this section -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- readme: collaborators,contributors -start -->
+<!-- readme: collaborators,contributors -end -->
