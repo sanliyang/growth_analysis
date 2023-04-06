@@ -40,7 +40,7 @@ git clone https://github.com/sanliyang/growth_analysis.git
 </table>
 
 ## 参与贡献方式
-提交PR申请，我会视情况而定
+提交[PR](https://github.com/sanliyang/growth_analysis/pulls)申请，我会视情况而定
 ### 贡献人员
 感谢所有贡献的人
 <!-- readme: collaborators,contributors -start -->
