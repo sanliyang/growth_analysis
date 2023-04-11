@@ -9,6 +9,9 @@ import os
 
 from osgeo.gdal import Dataset
 
+os.environ['PROJ_LIB'] = r"D:\python_38_2022-9-13\python\Lib\site-packages\pyproj\proj_dir\share\proj"
+os.environ['GDAL_DATA'] = r'D:\python_38_2022-9-13\python\Lib\site-packages\pyproj\proj_dir\share'
+
 
 class HDF2TIFF:
     def __init__(self, hdf_path):
@@ -90,19 +93,19 @@ class HDF2TIFF:
 
 
 if __name__ == '__main__':
-    conver_obj = HDF2TIFF(r"E:\AT21\csjc\data\hdf\MOD09GQ.A2023074.h26v04.061.2023076040141.hdf")
+    conver_obj = HDF2TIFF(r"D:\ss\MOD09GQ.A2023032.h26v05.061.2023034032441.hdf")
     conver_obj.open()
     nir = conver_obj.dataset_by_name('sur_refl_b02_1')
     r = conver_obj.dataset_by_name('sur_refl_b01_1')
 
     if nir is not None:
-        nir:Dataset = gdal.Open(nir)
+        nir: Dataset = gdal.Open(nir)
         print(nir.ReadAsArray())
     if r is not None:
         r = gdal.Open(r)
     if conver_obj.is_available():
-        conver_obj.convert_2_tiff('sur_refl_b02_1', r"E:\AT21\csjc\data\tiff")
-        conver_obj.convert_2_tiff('sur_refl_b01_1', r"E:\AT21\csjc\data\tiff")
+        conver_obj.convert_2_tiff('sur_refl_b02_1', r"D:\工具")
+        conver_obj.convert_2_tiff('sur_refl_b01_1', r"D:\工具")
     else:
         print('not available')
     conver_obj.close()

@@ -2,119 +2,67 @@
 # @Time : 2023/3/29 17:59
 # @Author : 施亚林 
 # @File : nadi_analysis.py
-from osgeo.gdal import Band
+import numpy as np
+from osgeo import gdal
+import os
 
-from base.c_constant import CConstant
+os.environ['PROJ_LIB'] = r"D:\python_38_2022-9-13\python\Lib\site-packages\pyproj\proj_dir\share\proj"
+os.environ['GDAL_DATA'] = r'D:\python_38_2022-9-13\python\Lib\site-packages\pyproj\proj_dir\share'
 
 
 class NDVIAnalysis:
-    Valid_Modis_Product_List = [CConstant.Name_Modis_Product_MOD09GQ]
 
-    def __init__(
-            self,
-            band_nir: Band,
-            band_red: Band,
-            product_type,
-            x_size: int,
-            y_size: int,
-            scale_factor: float = None,
-            force=False,
-            **options
-    ):
+    def __init__(self, nir_file, red_file):
+        self.nir_file = nir_file
+        self.red_file = red_file
 
-        if product_type not in self.Valid_Modis_Product_List and not force:
-            raise TypeError('Modis[{0}]产品，不支持计算NDVI'.format(product_type))
+    def extract_ndvi_2_tif(self):
+        # 读取Tiff影像数据
+        image_ds = gdal.Open(self.red_file)
+        image = np.array(image_ds.GetRasterBand(1).ReadAsArray())
 
-        self._options = options
-        self._product_type = product_type
-        self._band_nir = band_nir
-        self._band_red = band_red
-        self._x_size = x_size
-        self._y_size = y_size
-        if scale_factor is None:
-            self._scale_factor = getattr(CConstant, 'Modis_Scale_Factor_{0}'.format(self._product_type), 1)
-        else:
-            self._scale_factor = scale_factor
+        image_ds1 = gdal.Open(self.nir_file)
+        image1 = np.array(image_ds.GetRasterBand(1).ReadAsArray())
 
-        # pixel_value
-        self._p_val_valid_range_max = getattr(
-            CConstant,
-            'Modis_{0}_Valid_Range_Max'.format(self._product_type),
-            self._options.get(CConstant.Name_Modis_Valid_Range_Max, None)
-        )
-        self._p_val_valid_range_min = getattr(
-            CConstant,
-            'Modis_{0}_Valid_Range_Min'.format(self._product_type),
-            self._options.get(CConstant.Name_Modis_Valid_Range_Min, None)
-        )
+        # 获取红波段和近红外波段
+        red = image_ds.GetRasterBand(1).ReadAsArray().astype(np.float32)
+        nir = image_ds1.GetRasterBand(1).ReadAsArray().astype(np.float32)
 
-        self._fill_value = getattr(
-            CConstant,
-            'Modis_{0}_Fill_Value'.format(self._product_type),
-            self._options.get(CConstant.Name_Modis_Fill_Value, None)
-        )
-        self._no_data = getattr(
-            CConstant,
-            'Modis_{0}_OutPut_NoData_Value'.format(self._product_type),
-            self._options.get(CConstant.Modis_MOD09GQ_OutPut_NoData_Value, 0)
-        )
+        # 移除无效值和填充值
+        valid_pixels = np.logical_and(red > 0, nir > 0)
+        ndvi = np.zeros_like(red)
+        ndvi[valid_pixels] = (nir[valid_pixels] - red[valid_pixels]) / (nir[valid_pixels] + red[valid_pixels])
 
-    def convert_nodata(self, np_arr):
-        """
-        根据相应产品的成果NODATA值与官方的NODATA值进行转换
-        :return:
-        """
-        np_arr[
-            (np_arr < self._p_val_valid_range_min) |
-            (np_arr > self._p_val_valid_range_max) |
-            (np_arr == self._fill_value)
-            ] = self._no_data
+        # 将NDVI保存为Tiff影像
+        driver = gdal.GetDriverByName("GTiff")
+        file_name = os.path.basename(self.red_file).split("_")[0]
+        output_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "single_ndvi")
+        output_file = os.path.join(output_path, f"{file_name}.tif")
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        output_ds = driver.Create(output_file, image_ds.RasterXSize, image_ds.RasterYSize, 1, gdal.GDT_Float32)
+        output_ds.SetProjection(image_ds.GetProjection())
+        output_ds.SetGeoTransform(image_ds.GetGeoTransform())
+        output_band = output_ds.GetRasterBand(1)
 
-    def calculation(self, band_nir_np_array, band_red_np_array):
-        """
-        根据转换后NODATA值的近红外与红外波段对应numpy数组，计算出NDVI数据
-        :return:
-        """
-        # todo 不同numpy数组满足指定条件元素的计算
-        np_arr_band_nir_valid = band_nir_np_array[
-            (band_nir_np_array >= self._p_val_valid_range_min) &
-            (band_nir_np_array <= self._p_val_valid_range_max) &
-            (band_nir_np_array != self._fill_value)
-            ]
+        # 设置无效值和填充值
+        # output_band.SetNoDataValue(0)
+        # output_band.Fill(0)
 
-        np_arr_band_red_valid = band_red_np_array[
-            (band_red_np_array >= self._p_val_valid_range_min) &
-            (band_red_np_array <= self._p_val_valid_range_max) &
-            (band_red_np_array != self._fill_value)
-            ]
+        # 将NDVI写入Tiff影像
+        output_band.WriteArray(ndvi)
+        output_ds.FlushCache()
 
-        a = (np_arr_band_nir_valid - np_arr_band_red_valid) / (np_arr_band_nir_valid + np_arr_band_red_valid)
-        return a
-
-    def process(self):
-        # NDVI=（NIR-R）/（NIR+R）,NIR:近红外波段,R：红外波段
-
-        np_arr_band_nir = self._band_nir.ReadAsArray(0, 0, self._x_size, self._y_size)
-        np_app_band_red = self._band_red.ReadAsArray(0, 0, self._x_size, self._y_size)
-
-        self.convert_nodata(np_arr_band_nir)
-        self.convert_nodata(np_app_band_red)
-
-        self.calculation(np_arr_band_nir, np_app_band_red)
+        # 释放资源
+        output_band = None
+        output_ds = None
+        image_ds = None
+        image_ds1 = None
 
 
 if __name__ == '__main__':
-    from osgeo import gdal
+    red_file = r"D:\工具\MOD09GQ.A2023032.h26v05.061.2023034032441_sur_refl_b01_1.tif"
+    nir_file = r"D:\工具\MOD09GQ.A2023032.h26v05.061.2023034032441_sur_refl_b02_1.tif"
 
-    data = gdal.Open(r"E:\AT21\csjc\data\tiff\MOD09GQ.A2023074.h26v04.061.2023076040141_sur_refl_b01_1.tif")
-    x_size = data.RasterXSize
-    y_size = data.RasterYSize
-    band_r = data.GetRasterBand(1)
-
-    obj = NDVIAnalysis(
-        band_r,
-        band_r,
-        CConstant.Name_Modis_Product_MOD09GQ,
-        x_size, y_size
-    )
-    obj.process()
+    na = NDVIAnalysis(nir_file, red_file)
+    na.extract_ndvi_2_tif()

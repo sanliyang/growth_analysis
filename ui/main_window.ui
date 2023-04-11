@@ -67,20 +67,20 @@
          </rect>
         </property>
         <property name="text">
-         <string>目标区域（十进制度）:</string>
+         <string>监测坐标范围（十进制度）:</string>
         </property>
        </widget>
        <widget class="QPushButton" name="pushButton_5">
         <property name="geometry">
          <rect>
-          <x>260</x>
-          <y>640</y>
-          <width>161</width>
-          <height>51</height>
+          <x>60</x>
+          <y>690</y>
+          <width>371</width>
+          <height>61</height>
          </rect>
         </property>
         <property name="text">
-         <string>4.生成 NDVI 数据</string>
+         <string>3.生成 NDVI 数据</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_2">
@@ -132,37 +132,11 @@
          </rect>
         </property>
        </widget>
-       <widget class="QLabel" name="label_11">
-        <property name="geometry">
-         <rect>
-          <x>240</x>
-          <y>570</y>
-          <width>211</width>
-          <height>51</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>请先验证所需文件都已下载完成！</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_4">
-        <property name="geometry">
-         <rect>
-          <x>410</x>
-          <y>480</y>
-          <width>171</width>
-          <height>51</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>3.验证下载</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="label_13">
         <property name="geometry">
          <rect>
-          <x>410</x>
-          <y>330</y>
+          <x>10</x>
+          <y>420</y>
           <width>81</width>
           <height>21</height>
          </rect>
@@ -174,8 +148,8 @@
        <widget class="QLabel" name="label_14">
         <property name="geometry">
          <rect>
-          <x>410</x>
-          <y>400</y>
+          <x>10</x>
+          <y>470</y>
           <width>81</width>
           <height>21</height>
          </rect>
@@ -197,176 +171,19 @@
        <widget class="QTextBrowser" name="textBrowser_2">
         <property name="geometry">
          <rect>
-          <x>640</x>
+          <x>520</x>
           <y>50</y>
-          <width>451</width>
-          <height>601</height>
+          <width>571</width>
+          <height>701</height>
          </rect>
         </property>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>11</x>
-          <y>260</y>
-          <width>101</width>
-          <height>261</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="gridLayout">
-         <property name="verticalSpacing">
-          <number>30</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>起始日期：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>终止日期：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>目标卫星：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>所需数据：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_10">
-           <property name="text">
-            <string>数据版本：</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>250</y>
-          <width>161</width>
-          <height>281</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <property name="verticalSpacing">
-          <number>20</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QDateEdit" name="dateEdit">
-           <property name="displayFormat">
-            <string>yyyy-M-d</string>
-           </property>
-           <property name="date">
-            <date>
-             <year>2023</year>
-             <month>1</month>
-             <day>1</day>
-            </date>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QDateEdit" name="dateEdit_4">
-           <property name="displayFormat">
-            <string>yyyy-M-d</string>
-           </property>
-           <property name="date">
-            <date>
-             <year>2023</year>
-             <month>1</month>
-             <day>1</day>
-            </date>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QComboBox" name="comboBox">
-           <property name="editable">
-            <bool>false</bool>
-           </property>
-           <property name="currentText">
-            <string>MODIS:TERRA</string>
-           </property>
-           <property name="maxVisibleItems">
-            <number>7</number>
-           </property>
-           <item>
-            <property name="text">
-             <string>MODIS:TERRA</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QComboBox" name="comboBox_2">
-           <property name="editable">
-            <bool>false</bool>
-           </property>
-           <property name="currentText">
-            <string>MOD03</string>
-           </property>
-           <property name="maxVisibleItems">
-            <number>7</number>
-           </property>
-           <item>
-            <property name="text">
-             <string>MOD03</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>MOD09GQ</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>MOD35_L2</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QComboBox" name="comboBox_3">
-           <property name="editable">
-            <bool>false</bool>
-           </property>
-           <property name="currentText">
-            <string>1.0.1</string>
-           </property>
-           <property name="maxVisibleItems">
-            <number>7</number>
-           </property>
-           <item>
-            <property name="text">
-             <string>1.0.1</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
        </widget>
        <widget class="QTextBrowser" name="textBrowser_3">
         <property name="geometry">
          <rect>
-          <x>410</x>
-          <y>360</y>
-          <width>161</width>
+          <x>170</x>
+          <y>410</y>
+          <width>211</width>
           <height>31</height>
          </rect>
         </property>
@@ -374,9 +191,9 @@
        <widget class="QTextBrowser" name="textBrowser_4">
         <property name="geometry">
          <rect>
-          <x>410</x>
-          <y>430</y>
-          <width>161</width>
+          <x>170</x>
+          <y>470</y>
+          <width>211</width>
           <height>31</height>
          </rect>
         </property>
@@ -384,23 +201,23 @@
        <widget class="QPushButton" name="pushButton_6">
         <property name="geometry">
          <rect>
-          <x>40</x>
-          <y>560</y>
-          <width>161</width>
-          <height>51</height>
+          <x>60</x>
+          <y>540</y>
+          <width>371</width>
+          <height>61</height>
          </rect>
         </property>
         <property name="text">
-         <string>1.检索数据</string>
+         <string>1.下载数据</string>
         </property>
        </widget>
        <widget class="QPushButton" name="pushButton_2">
         <property name="geometry">
          <rect>
-          <x>410</x>
-          <y>263</y>
-          <width>171</width>
-          <height>41</height>
+          <x>60</x>
+          <y>620</y>
+          <width>371</width>
+          <height>61</height>
          </rect>
         </property>
         <property name="minimumSize">
@@ -410,7 +227,115 @@
          </size>
         </property>
         <property name="text">
-         <string>2.下载数据</string>
+         <string>2.暂停下载</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>360</y>
+          <width>321</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="editable">
+         <bool>false</bool>
+        </property>
+        <property name="currentText">
+         <string>MOD03（61）、MOD09GQ（6）、MOD35_L2（61）</string>
+        </property>
+        <property name="maxVisibleItems">
+         <number>7</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>MOD03（61）、MOD09GQ（6）、MOD35_L2（61）</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>MOD03（61）、MOD09GQ（61）、MOD35_L2（61）</string>
+         </property>
+        </item>
+       </widget>
+       <widget class="QLabel" name="label_7">
+        <property name="geometry">
+         <rect>
+          <x>12</x>
+          <y>362</y>
+          <width>111</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>所需数据版本：</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>12</x>
+          <y>304</y>
+          <width>111</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>终止日期：</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_6">
+        <property name="geometry">
+         <rect>
+          <x>12</x>
+          <y>256</y>
+          <width>111</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>起始日期：</string>
+        </property>
+       </widget>
+       <widget class="QDateEdit" name="dateEdit">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>260</y>
+          <width>211</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="displayFormat">
+         <string>yyyy-M-d</string>
+        </property>
+        <property name="date">
+         <date>
+          <year>2023</year>
+          <month>1</month>
+          <day>1</day>
+         </date>
+        </property>
+       </widget>
+       <widget class="QDateEdit" name="dateEdit_4">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>310</y>
+          <width>211</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="displayFormat">
+         <string>yyyy-M-d</string>
+        </property>
+        <property name="date">
+         <date>
+          <year>2023</year>
+          <month>1</month>
+          <day>1</day>
+         </date>
         </property>
        </widget>
       </widget>

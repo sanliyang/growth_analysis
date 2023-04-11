@@ -17,11 +17,15 @@ class DownloadThread(QThread):
     def __init__(self):
         super().__init__()
         self.file_url_list = None
+        self.start_date = None
+        self.end_date = None
 
     my_str = pyqtSignal(str)  # 创建任务信号
 
-    def set_file_url(self, file_url_list):
+    def set_file_url(self, file_url_list, start_date, end_date):
         self.file_url_list = file_url_list
+        self.start_date = start_date
+        self.end_date = end_date
 
     def run(self):
         """
@@ -33,5 +37,5 @@ class DownloadThread(QThread):
         dp.set_headers()
         while len(self.file_url_list) > 0:
             file_url = self.file_url_list.pop(0)
-            dp.download_file(file_url)
+            dp.download_file(file_url, self.start_date, self.end_date)
             self.my_str.emit(file_url.split("/")[-1])

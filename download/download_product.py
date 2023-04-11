@@ -26,9 +26,18 @@ class DownloadProduct:
             "Authorization": "Bearer " + self.token
         }
 
-    def download_file(self, file_url):
+    def download_file(self, file_url, start_date, end_date):
         print(file_url)
-        file_path = "D:/工具"
+        file_path = os.path.join(
+            os.path.dirname(
+                os.path.dirname(__file__)
+            ),
+            "data",
+            "download",
+            f"{start_date}_{end_date}"
+        )
+        if not os.path.exists(file_path):
+            os.makedirs(file_path)
         session = requests.Session()
         resp = session.get(url=file_url, headers=self.headers)
         file_size = resp.headers.get("Content-Length")
