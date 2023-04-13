@@ -18,7 +18,7 @@ class DownloadProduct:
         self.headers = None
 
     def get_token(self):
-        with open('D:/grow_anay/growth_analysis/download/base/token.txt', 'r') as f:
+        with open(r"D:\grow_anay\growth_analysis\download\base\token.txt", 'r') as f:
             self.token = f.read()
 
     def set_headers(self):
@@ -26,7 +26,7 @@ class DownloadProduct:
             "Authorization": "Bearer " + self.token
         }
 
-    def download_file(self, file_url, start_date, end_date):
+    def download_file(self, file_url, start_date, end_date, area):
         print(file_url)
         file_path = os.path.join(
             os.path.dirname(
@@ -34,7 +34,8 @@ class DownloadProduct:
             ),
             "data",
             "download",
-            f"{start_date}_{end_date}"
+            f"{start_date}_{end_date}_{area}",
+            "hdf"
         )
         if not os.path.exists(file_path):
             os.makedirs(file_path)
@@ -51,7 +52,6 @@ class DownloadProduct:
                     code.write(chunk)
                     code.flush()
         session.close()
-        return file_name
 
 
 if __name__ == '__main__':

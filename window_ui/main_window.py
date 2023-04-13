@@ -11,8 +11,10 @@ import time
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QMutex
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
+from win32process import SuspendThread
 
 from window_ui.download_thread import DownloadThread
 from window_ui.search_thread import SearchThread
@@ -27,19 +29,19 @@ class Ui_MainWindow(object):
         self.version = None
         self.product = None
         self.download_url = list()
-        self.thread_num = 6
         # 放在__init__(self):下，主窗口类实例，初始化时加载
         self.my_thread1 = DownloadThread()
         self.my_thread1.my_str.connect(self.get_sin_out_download)
 
         self.my_thread2 = SearchThread()
         self.my_thread2.my_list.connect(self.get_sin_out_search)
+        self.status = 0
 
-        self.flag = 1
+        self.download_count = 1
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.setWindowIcon(QIcon('../image/main.ico'))
+        MainWindow.setWindowIcon(QIcon('./image/main.ico'))
         MainWindow.resize(1251, 864)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -161,32 +163,15 @@ class Ui_MainWindow(object):
         """
         try:
             if self.download_url:
+                # 每次启动前都需要初始化download_count为1
                 # self.textBrowser_3.setText(str(len(self.download_url)))
-                self.textBrowser_2.setPlainText("")
                 self.textBrowser_2.insertPlainText("正在开始下载数据...\n")
-                self.my_thread1.set_file_url(self.download_url, self.start_date, self.end_date)
+                print(self.my_thread1.currentThreadId())
+                self.my_thread1.set_file_url(self.download_url, self.start_date, self.end_date, self.spatial_tuple)
                 self.my_thread1.start()
                 # self.textBrowser_2.insertPlainText("所有下载均已完成，请查收！\n")
             else:
-                self.textBrowser_2.setPlainText("暂无可下载的数据")
-        except Exception as error:
-            print(error)
-
-    def stop_download_thread(self):
-        """
-        启动线程
-        :return:
-        """
-        try:
-            if self.download_url:
-                # self.textBrowser_3.setText(str(len(self.download_url)))
-                self.textBrowser_2.setPlainText("")
-                self.textBrowser_2.insertPlainText("正在开始下载数据...\n")
-                self.my_thread1.set_file_url(self.download_url, self.start_date, self.end_date)
-                self.my_thread1.start()
-                # self.textBrowser_2.insertPlainText("所有下载均已完成，请查收！\n")
-            else:
-                self.textBrowser_2.setPlainText("暂无可下载的数据")
+                self.textBrowser_2.setPlainText("暂无可下载的数据\n")
         except Exception as error:
             print(error)
 
@@ -197,9 +182,12 @@ class Ui_MainWindow(object):
         """
         try:
             self.get_search_params()
-
+            self.pushButton_2.setEnabled(True)
             self.my_thread2.set_params(self.start_date, self.end_date, self.spatial_tuple, self.product, self.version)
             self.my_thread2.start()
+            self.textBrowser_2.setPlainText("")
+            # 这里需要将检索到的数据展示到右侧的 textbrow 中 以遍用户进行查看
+            self.textBrowser_2.insertPlainText("正在开始检索数据...\n")
 
         except Exception as error:
             print(error)
@@ -232,9 +220,15 @@ class Ui_MainWindow(object):
         :param out_str:
         :return:
         """
-        self.textBrowser_2.insertPlainText(f"[{out_str}]下载完成！\n")
-        self.textBrowser_4.setPlainText(str(self.flag))
-        self.flag += 1
+        download_file_name = out_str[0].split("/")[-1]
+        download_status = out_str[1]
+        if download_status == 1:
+            self.textBrowser_2.insertPlainText(f"[{download_file_name}]正在下载...\n")
+        if download_status == 0:
+            self.textBrowser_2.insertPlainText("done\n")
+            self.pushButton_2.setEnabled(True)
+            self.textBrowser_4.setPlainText(str(self.download_count))
+            self.download_count += 1
 
     def get_sin_out_search(self, out_str):
         """
@@ -246,7 +240,7 @@ class Ui_MainWindow(object):
         self.textBrowser_3.setPlainText("")
         self.textBrowser_2.setPlainText("")
         # 这里需要将检索到的数据展示到右侧的 textbrow 中 以遍用户进行查看
-        self.textBrowser_2.insertPlainText(f"已经检索到了[{len(self.download_url)}]景数据..." + "\n")
+        self.textBrowser_2.insertPlainText(f"已经检索到了[{len(self.download_url)}]景数据...\n")
         self.textBrowser_3.setPlainText(str(len(self.download_url)))
         for download_url in self.download_url:
             self.textBrowser_2.insertPlainText(os.path.basename(download_url) + "\n")
@@ -254,17 +248,36 @@ class Ui_MainWindow(object):
             # 实时页面刷新， 防止textbrowser中的信息加载不出来
             QApplication.processEvents()
         if self.download_url:
+            self.download_count = 1
             # 这里给个时间暂停模块，方便用户可以观察到检索到的数据
             time.sleep(2)
+            self.textBrowser_2.setPlainText("")
             # 检索完毕执行下载模块
             self.start_download_thread()
 
     def stop_download_task(self):
-        ...
+        if self.status == 0:
+            self.status = 4
+            # 需要通过信号的方式传递
+            self.textBrowser_2.insertPlainText("正在下载的数据下载完成将会停止下载！\n")
+            self.pushButton_2.setText("2.继续下载")
+            self.pushButton_2.setEnabled(False)
+            self.my_thread1.stop()
+            print("开始暂停")
+        else:
+            self.status = 0
+            self.textBrowser_2.insertPlainText("继续开始下载！\n")
+            self.pushButton_2.setText("2.暂停下载")
+            # 重新启动下载
+            print(self.download_url)
+            if self.download_url:
+                self.my_thread1.resume()
+                self.my_thread1.set_file_url(self.download_url, self.start_date, self.end_date)
+                self.my_thread1.start()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "长势监测软件-绿色免安装版"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "长势监测软件"))
         self.label_5.setText(_translate("MainWindow", "下"))
         self.label.setText(_translate("MainWindow", "监测坐标范围（十进制度）"))
         self.pushButton_5.setText(_translate("MainWindow", "3.生成 NDVI 数据"))
@@ -284,15 +297,27 @@ class Ui_MainWindow(object):
         self.dateEdit.setDisplayFormat(_translate("MainWindow", "yyyy-M-d"))
         self.dateEdit_4.setDisplayFormat(_translate("MainWindow", "yyyy-M-d"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "数据处理"))
-        self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Microsoft YaHei UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:700;\">二十一世纪空间技术应用有限公司</span></p>\n"
-"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:700;\"><br /></p>\n"
-"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:700;\"><br /></p>\n"
-"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:700;\"><br /></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">产品名称：长势监测软件</span></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">  产品类型：exe可执行程序</span></p>\n"
-"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+        self.textBrowser.setHtml(_translate("MainWindow",
+                                            '''<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">
+                                            <html><head/><body><p align="center">
+                                            <span style=" font-size:12pt; font-weight:700;">二十一世纪空间技术应用有限公司</span></p><p align="center"><br/></p>
+                                            <p align="center"><br/></p><p align="center"><br/></p>
+                                            <div align="center">
+                                            <p>
+                                                <span style=" font-size:11pt;">&emsp;&emsp;产品名称:&emsp;&nbsp;长势监测软件</span>
+                                            </p>
+                                            <p>
+                                                <span style=" font-size:11pt;">&emsp;&emsp;产品类型:&emsp;&nbsp;exe可执行程序</span>
+                                            </p>
+                                            <p>
+                                                <span style=" font-size:11pt;">&emsp;&emsp;产品版本:&emsp;&nbsp;1.0.1</span>
+                                            </p>
+                                            <p >
+                                                <span style=" font-size:11pt;">&emsp;&emsp;管理员邮箱:&emsp;lbylyr@gmail.com</span>
+                                            </p>
+                                            </div>
+                                            </body></html>
+                                            '''
+                                            )
+                                )
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "软件信息"))

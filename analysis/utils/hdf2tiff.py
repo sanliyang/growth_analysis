@@ -72,7 +72,7 @@ class HDF2TIFF:
 
         raster_data: Dataset = gdal.Open(data)
 
-        tif_name = "{0}/{1}_{2}.tif".format(save_path, self.__save_filename(), dataset_index)
+        tif_name = "{0}/{1}.tif".format(save_path, self.__save_filename())
 
         gdal.Translate(
             tif_name,

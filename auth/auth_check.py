@@ -71,9 +71,10 @@ class AuthCheckUI:
         self.end_date = datetime.strptime(decrypt_license_eval["end_date"], "%Y-%m-%d")
         real_mac_address = self.get_mac_address()
         now = datetime.now()
+        universal_address = "0.0.0.0"
 
-        if self.user == real_mac_address or now <= self.start_date or now >= self.end_date:
-            return False
-        else:
+        if (self.user == real_mac_address or self.user == universal_address) and (self.start_date <= now <= self.end_date):
             return True
+        else:
+            return False
 

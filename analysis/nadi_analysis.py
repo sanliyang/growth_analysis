@@ -6,15 +6,16 @@ import numpy as np
 from osgeo import gdal
 import os
 
-os.environ['PROJ_LIB'] = r"D:\python_38_2022-9-13\python\Lib\site-packages\pyproj\proj_dir\share\proj"
-os.environ['GDAL_DATA'] = r'D:\python_38_2022-9-13\python\Lib\site-packages\pyproj\proj_dir\share'
+os.environ['PROJ_LIB'] = r"D:\grow_anay\python\Lib\site-packages\pyproj\proj_dir\share\proj"
+os.environ['GDAL_DATA'] = r'D:\grow_anay\python\Lib\site-packages\pyproj\proj_dir\share'
 
 
 class NDVIAnalysis:
 
-    def __init__(self, nir_file, red_file):
+    def __init__(self, nir_file, red_file, output_path):
         self.nir_file = nir_file
         self.red_file = red_file
+        self.output_path = output_path
 
     def extract_ndvi_2_tif(self):
         # 读取Tiff影像数据
@@ -36,10 +37,10 @@ class NDVIAnalysis:
         # 将NDVI保存为Tiff影像
         driver = gdal.GetDriverByName("GTiff")
         file_name = os.path.basename(self.red_file).split("_")[0]
-        output_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "single_ndvi")
-        output_file = os.path.join(output_path, f"{file_name}.tif")
-        if not os.path.exists(output_path):
-            os.makedirs(output_path)
+        # output_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "single_ndvi")
+        output_file = os.path.join(self.output_path, f"{file_name}.tif")
+        if not os.path.exists(self.output_path):
+            os.makedirs(self.output_path)
         output_ds = driver.Create(output_file, image_ds.RasterXSize, image_ds.RasterYSize, 1, gdal.GDT_Float32)
         output_ds.SetProjection(image_ds.GetProjection())
         output_ds.SetGeoTransform(image_ds.GetGeoTransform())
@@ -64,5 +65,5 @@ if __name__ == '__main__':
     red_file = r"D:\工具\MOD09GQ.A2023032.h26v05.061.2023034032441_sur_refl_b01_1.tif"
     nir_file = r"D:\工具\MOD09GQ.A2023032.h26v05.061.2023034032441_sur_refl_b02_1.tif"
 
-    na = NDVIAnalysis(nir_file, red_file)
+    na = NDVIAnalysis(nir_file, red_file, "aaa")
     na.extract_ndvi_2_tif()
