@@ -16,6 +16,7 @@ class DownloadThread(QThread):
 
     def __init__(self):
         super().__init__()
+        self.area = None
         self.status = 0
         self.file_url_list = list()
         self.start_date = None
