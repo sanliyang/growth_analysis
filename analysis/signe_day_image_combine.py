@@ -3,6 +3,7 @@
 # @Author : 施亚林 
 # @File : signe_day_image_combine.py
 from osgeo import gdal
+import numpy as np
 
 
 class SingeDayImageCombine:
@@ -12,30 +13,39 @@ class SingeDayImageCombine:
         self.single_tif_name_with_path = single_tif_name_with_path
 
     def merge_tiff(self):
-        # 打开所有要合并的TIFF文件
-        src_files_to_mosaic = []
-        for file in self.tif_file_list:
-            src = gdal.Open(file.__str__())
-            src_files_to_mosaic.append(src)
 
-        # 获取输入TIFF文件的基础信息
-        src_proj = src_files_to_mosaic[0].GetProjection()
-        src_geotrans = src_files_to_mosaic[0].GetGeoTransform()
-        x_min = src_geotrans[0]
-        y_max = src_geotrans[3]
-        x_max = x_min + src_files_to_mosaic[0].RasterXSize * src_geotrans[1]
-        y_min = y_max + src_files_to_mosaic[0].RasterYSize * src_geotrans[5]
+        # 打开第一个文件获取基本信息
+        first_file = gdal.Open(self.tif_file_list[0].__str__())
+        geotransform = first_file.GetGeoTransform()
+        projection = first_file.GetProjection()
+        cols = first_file.RasterXSize
+        rows = first_file.RasterYSize
+        bands = first_file.RasterCount
 
-        # 计算输出TIFF文件的大小
-        pixel_size = src_geotrans[1]
-        target_ds = gdal.GetDriverByName('GTiff').Create(self.single_tif_name_with_path, int((x_max - x_min) / pixel_size),
-                                                         int((y_max - y_min) / pixel_size), len(src_files_to_mosaic),
-                                                         gdal.GDT_Float32)
+        # 创建输出文件
+        driver = gdal.GetDriverByName('GTiff')
+        output_file = driver.Create(self.single_tif_name_with_path, cols, rows, bands, gdal.GDT_Float32)
+        output_file.SetGeoTransform(geotransform)
+        output_file.SetProjection(projection)
 
-        # 将所有输入TIFF文件写入输出TIFF文件中
-        for i in range(len(src_files_to_mosaic)):
-            gdal.Warp(target_ds, src_files_to_mosaic[i], dstSRS=src_proj, format="VRT",
-                      outputBounds=[x_min, y_min, x_max, y_max], srcNodata=0, dstNodata=0, multithread=True)
+        # 逐个读取输入文件中的数据，并将其写入输出文件
+        for i in range(bands):
+            band_data = np.zeros((rows, cols))
+            for j, input_file in enumerate(self.tif_file_list):
+                try:
+                    dataset = gdal.Open(input_file.__str__())
+                    input_data = dataset.GetRasterBand(i + 1).ReadAsArray()
+                except Exception as e:
+                    print(e)
+                band_data += input_data
+            output_file.GetRasterBand(i + 1).WriteArray(band_data)
 
-        # 关闭文件
-        target_ds = None
+        # 完成后清理和关闭文件
+        output_file.FlushCache()
+        output_file = None
+
+
+if __name__ == '__main__':
+    dataset = gdal.Open("D:/grow_anay/growth_analysis/data/download/2023-02-01_2023-02-15_(110, 31, 117, 37)/ndvi_hash/MOD09GQ.A2023032.h26v05.006.2023034025738.tif")
+    input_data = dataset.GetRasterBand(1).ReadAsArray()
+    print(input_data)

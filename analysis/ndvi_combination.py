@@ -80,12 +80,14 @@ class NdviCombination:
         single_ndvi_file_path_with_name = os.path.join(single_ndvi_path, root_path_name)
         single_ndvi_file_path_with_name_with_suffix = f"{single_ndvi_file_path_with_name}.tif"
 
+        # todo 这里进行单天分批次进行计算并处理
+
         sdic = SingeDayImageCombine(ndvi_hash_file_list, single_ndvi_file_path_with_name_with_suffix)
         sdic.merge_tiff()
 
 
 if __name__ == '__main__':
-    hdf_path = r"D:\ss\hdf"
+    hdf_path = r"D:\grow_anay\growth_analysis\data\download\2023-02-01_2023-02-15_(110, 31, 117, 37)\hdf"
 
     nc = NdviCombination(hdf_path)
     nc.hdf_conversion_tif()

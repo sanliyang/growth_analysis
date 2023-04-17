@@ -58,5 +58,12 @@ if __name__ == '__main__':
     dp = DownloadProduct()
     dp.get_token()
     dp.set_headers()
-    dp.download_file(
-        "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD03/2023/032/MOD03.A2023032.0210.061.2023032150218.hdf")
+    file_url_list = [
+            'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/6/MOD09GQ/2023/032/MOD09GQ.A2023032.h26v05.006.2023034025738.hdf',
+            'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/6/MOD09GQ/2023/032/MOD09GQ.A2023032.h27v05.006.2023034032517.hdf'
+        ]
+    time_start_date = "2023-02-01"
+    time_end_date = "2023-02-15"
+    spatial_tuple = (110, 31, 117, 37)
+    for file_url in file_url_list:
+        dp.download_file(file_url, time_start_date, time_end_date, spatial_tuple)

@@ -38,7 +38,7 @@ class NDVIAnalysis:
         driver = gdal.GetDriverByName("GTiff")
         file_name = os.path.basename(self.red_file).split("_")[0]
         # output_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "single_ndvi")
-        output_file = os.path.join(self.output_path, f"{file_name}.tif")
+        output_file = os.path.join(self.output_path, f"{file_name}")
         if not os.path.exists(self.output_path):
             os.makedirs(self.output_path)
         output_ds = driver.Create(output_file, image_ds.RasterXSize, image_ds.RasterYSize, 1, gdal.GDT_Float32)
