@@ -49,6 +49,7 @@ class DownloadThread(QThread):
             dp.download_file(file_url, self.start_date, self.end_date, self.area)
             self.file_url_list.remove(file_url)
             self.my_str.emit([file_url, 0])
+        self.my_str.emit(["done", 10])
 
     def stop(self):
         self.status = 4

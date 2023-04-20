@@ -59,8 +59,7 @@ if __name__ == '__main__':
     dp.get_token()
     dp.set_headers()
     file_url_list = [
-            'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/6/MOD09GQ/2023/032/MOD09GQ.A2023032.h26v05.006.2023034025738.hdf',
-            'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/6/MOD09GQ/2023/032/MOD09GQ.A2023032.h27v05.006.2023034032517.hdf'
+            'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD35_L2/2023/033/MOD35_L2.A2023033.0250.061.2023033131723.hdf'
         ]
     time_start_date = "2023-02-01"
     time_end_date = "2023-02-15"

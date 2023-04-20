@@ -9,11 +9,12 @@
 ++++++++++++++++++++++++++++++++++++++ """
 import os.path
 import pathlib
+import re
 from analysis.nadi_analysis import NDVIAnalysis
 from osgeo import gdal
 from osgeo.gdal import Dataset
-from utils.hdf2tiff import HDF2TIFF
-from signe_day_image_combine import SingeDayImageCombine
+from analysis.utils.hdf2tiff import HDF2TIFF
+from analysis.signe_day_image_combine import SingeDayImageCombine
 
 
 class NdviCombination:
@@ -36,7 +37,10 @@ class NdviCombination:
             os.makedirs(self.tif_red)
 
         hdf_list = list(pathlib.Path(self.hdf_path).glob("*"))
+        # 这里需要对进行ndvi的数据进行过滤
         for hdf_file in hdf_list:
+            if not hdf_file.__str__().startwith("MOD09GQ"):
+                continue
             conver_obj = HDF2TIFF(hdf_file.__str__())
             conver_obj.open()
             nir = conver_obj.dataset_by_name('sur_refl_b02_1')
@@ -81,6 +85,10 @@ class NdviCombination:
         single_ndvi_file_path_with_name_with_suffix = f"{single_ndvi_file_path_with_name}.tif"
 
         # todo 这里进行单天分批次进行计算并处理
+        # 将数组中的元素进行按天分组， 同时根据天对单天ndvi进行命名， 格式为： NDVI_max2023100_2023100
+        for file_name_with_path in ndvi_hash_file_list:
+            regex = r"\d{4}-(0?[1-9]|[1-2][0-9]|3[0-6][0-6]|3[0-5][0-9]|{}[0-9])".format()
+            re.match(regex, file_name_with_path)
 
         sdic = SingeDayImageCombine(ndvi_hash_file_list, single_ndvi_file_path_with_name_with_suffix)
         sdic.merge_tiff()

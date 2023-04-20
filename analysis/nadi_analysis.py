@@ -3,6 +3,7 @@
 # @Author : 施亚林 
 # @File : nadi_analysis.py
 import numpy as np
+from base.c_constant import CConstant
 from osgeo import gdal
 import os
 
@@ -10,7 +11,7 @@ os.environ['PROJ_LIB'] = r"D:\grow_anay\python\Lib\site-packages\pyproj\proj_dir
 os.environ['GDAL_DATA'] = r'D:\grow_anay\python\Lib\site-packages\pyproj\proj_dir\share'
 
 
-class NDVIAnalysis:
+class NDVIAnalysis(CConstant):
 
     def __init__(self, nir_file, red_file, output_path):
         self.nir_file = nir_file
@@ -33,6 +34,7 @@ class NDVIAnalysis:
         valid_pixels = np.logical_and(red > 0, nir > 0)
         ndvi = np.zeros_like(red)
         ndvi[valid_pixels] = (nir[valid_pixels] - red[valid_pixels]) / (nir[valid_pixels] + red[valid_pixels])
+        ndvi = ndvi * self.Modis_Scale_Factor_MOD09GQ
 
         # 将NDVI保存为Tiff影像
         driver = gdal.GetDriverByName("GTiff")

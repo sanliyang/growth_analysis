@@ -8,20 +8,20 @@
 @desc->
 ++++++++++++++++++++++++++++++++++++++ """
 import sys
-import os.path
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 import os.path
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from window_ui.main_window import Ui_MainWindow
-# from . import main_window
 import sys
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QCoreApplication, Qt
 from PyQt5.QtWidgets import QApplication
 from auth.auth_check import AuthCheckUI
 
 app = QApplication(sys.argv)
+QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 
 if os.path.exists(os.path.join(os.path.dirname(__file__), "lic", "eval.txt")):
     msg_box = QMessageBox()
