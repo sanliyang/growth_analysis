@@ -4,11 +4,11 @@
 # @File : nadi_analysis.py
 import numpy as np
 from base.c_constant import CConstant
-from osgeo import gdal
+from osgeo import gdal, osr
 import os
 
-os.environ['PROJ_LIB'] = r"D:\grow_anay\python\Lib\site-packages\pyproj\proj_dir\share\proj"
-os.environ['GDAL_DATA'] = r'D:\grow_anay\python\Lib\site-packages\pyproj\proj_dir\share'
+os.environ['PROJ_LIB'] = "./share/proj4"
+os.environ['GDAL_DATA'] = './share'
 
 
 class NDVIAnalysis(CConstant):
@@ -34,7 +34,7 @@ class NDVIAnalysis(CConstant):
         valid_pixels = np.logical_and(red > 0, nir > 0)
         ndvi = np.zeros_like(red)
         ndvi[valid_pixels] = (nir[valid_pixels] - red[valid_pixels]) / (nir[valid_pixels] + red[valid_pixels])
-        ndvi = ndvi * self.Modis_Scale_Factor_MOD09GQ
+        ndvi = ndvi / self.Modis_Scale_Factor_MOD09GQ
 
         # 将NDVI保存为Tiff影像
         driver = gdal.GetDriverByName("GTiff")
@@ -49,8 +49,8 @@ class NDVIAnalysis(CConstant):
         output_band = output_ds.GetRasterBand(1)
 
         # 设置无效值和填充值
-        # output_band.SetNoDataValue(0)
-        # output_band.Fill(0)
+        output_band.SetNoDataValue(0)
+        output_band.Fill(0)
 
         # 将NDVI写入Tiff影像
         output_band.WriteArray(ndvi)

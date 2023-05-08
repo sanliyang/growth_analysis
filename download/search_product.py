@@ -61,10 +61,10 @@ class SearchProduct:
 
 
 if __name__ == '__main__':
-    time_start_date = "2023-02-01"
-    time_end_date = "2023-02-15"
-    spatial_tuple = (110, 31, 117, 37)
-    product = ['MOD35_L2']
-    version = 1
+    time_start_date = "2023-04-10"
+    time_end_date = "2023-04-10"
+    spatial_tuple = (96, 54, 136, 23)
+    product = ['MOD09GQ']
+    version = 0
     sp = SearchProduct(time_start_date, time_end_date, spatial_tuple, product, version)
     sp.search_product()

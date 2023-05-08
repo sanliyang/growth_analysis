@@ -135,40 +135,55 @@ class Ui_MainWindow(object):
         self.textBrowser_2.setMinimumSize(QtCore.QSize(500, 0))
         self.textBrowser_2.setObjectName("textBrowser_2")
         self.gridLayout.addWidget(self.textBrowser_2, 0, 5, 14, 1)
-        self.textEdit_7 = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit_7 = QtWidgets.QLineEdit(self.centralwidget)
         self.textEdit_7.setMinimumSize(QtCore.QSize(200, 67))
         self.textEdit_7.setMaximumSize(QtCore.QSize(350, 120))
         self.textEdit_7.setObjectName("textEdit_7")
 
-        self.textEdit_7.setFontPointSize(15)
-        # self.textEdit_7.setCurrentFont()
+        self.textEdit_7.setAlignment(Qt.AlignHCenter)
+
+        font = self.textEdit_7.font()
+        font.setPointSize(15)
+        self.textEdit_7.setFont(font)
 
         self.gridLayout.addWidget(self.textEdit_7, 3, 0, 1, 1)
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 2, 0, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.textEdit.setMinimumSize(QtCore.QSize(200, 67))
         self.textEdit.setMaximumSize(QtCore.QSize(350, 120))
         self.textEdit.setObjectName("textEdit")
 
-        self.textEdit.setFontPointSize(15)
+        self.textEdit.setAlignment(Qt.AlignHCenter)
+
+        font = self.textEdit.font()
+        font.setPointSize(15)
+        self.textEdit.setFont(font)
 
         self.gridLayout.addWidget(self.textEdit, 2, 2, 1, 1)
-        self.textEdit_5 = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit_5 = QtWidgets.QLineEdit(self.centralwidget)
         self.textEdit_5.setMinimumSize(QtCore.QSize(200, 67))
         self.textEdit_5.setMaximumSize(QtCore.QSize(350, 120))
         self.textEdit_5.setObjectName("textEdit_5")
 
-        self.textEdit_5.setFontPointSize(15)
+        self.textEdit_5.setAlignment(Qt.AlignHCenter)
+
+        font = self.textEdit_5.font()
+        font.setPointSize(15)
+        self.textEdit_5.setFont(font)
 
         self.gridLayout.addWidget(self.textEdit_5, 3, 3, 1, 1)
-        self.textEdit_6 = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit_6 = QtWidgets.QLineEdit(self.centralwidget)
         self.textEdit_6.setMinimumSize(QtCore.QSize(200, 67))
         self.textEdit_6.setMaximumSize(QtCore.QSize(350, 120))
         self.textEdit_6.setObjectName("textEdit_6")
 
-        self.textEdit_6.setFontPointSize(15)
+        self.textEdit_6.setAlignment(Qt.AlignHCenter)
+
+        font = self.textEdit_6.font()
+        font.setPointSize(15)
+        self.textEdit_6.setFont(font)
 
         self.gridLayout.addWidget(self.textEdit_6, 4, 2, 1, 1)
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
@@ -207,9 +222,9 @@ class Ui_MainWindow(object):
         :return:
         """
         try:
+            self.get_search_params()
             self.textBrowser_2.insertPlainText("开始生成单天的ndvi数据...\n")
-            print(self.my_thread1.currentThreadId())
-            self.my_thread3.set_params()
+            self.my_thread3.set_params(self.start_date, self.end_date, self.spatial_tuple)
             self.my_thread3.start()
         except Exception as error:
             print(error)
@@ -254,10 +269,10 @@ class Ui_MainWindow(object):
         self.start_date = self.dateEdit.date().toString('yyyy-MM-dd')
         self.end_date = self.dateEdit_4.date().toString('yyyy-MM-dd')
         self.spatial_tuple = (
-            int(self.textEdit_7.toPlainText()),
-            int(self.textEdit.toPlainText()),
-            int(self.textEdit_5.toPlainText()),
-            int(self.textEdit_6.toPlainText())
+            int(self.textEdit_7.text()),
+            int(self.textEdit.text()),
+            int(self.textEdit_5.text()),
+            int(self.textEdit_6.text())
         )
 
         self.product = ["MOD03", "MOD09GQ", "MOD35_L2"]
@@ -287,7 +302,7 @@ class Ui_MainWindow(object):
             self.pushButton_2.setEnabled(True)
             self.textBrowser_4.setPlainText(str(self.download_count))
             self.download_count += 1
-        if download_status == 10:
+        if download_status == 10 and len(self.download_url) == 0:
             self.textBrowser_2.insertPlainText("当前数据均已下载完成！\n")
             self.pushButton_6.setEnabled(True)
 
@@ -321,7 +336,7 @@ class Ui_MainWindow(object):
         :param out_str:
         :return:
         """
-        self.textBrowser_2.insertPlainText(f"已经计算出[{out_str}]的ndvi数据...\n")
+        self.textBrowser_2.insertPlainText(out_str + "\n")
         # 实时页面刷新， 防止textbrowser中的信息加载不出来
         QApplication.processEvents()
 
@@ -356,33 +371,6 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(0, _translate("MainWindow", "MOD03（61）、MOD09GQ（6）、MOD35_L2（61）"))
         self.comboBox.setItemText(1, _translate("MainWindow", "MOD03（61）、MOD09GQ（61）、MOD35_L2（61）"))
         self.dateEdit_4.setDisplayFormat(_translate("MainWindow", "yyyy-M-d"))
-        self.textEdit_7.setHtml(_translate("MainWindow",
-                                           "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                           "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-                                           "p, li { white-space: pre-wrap; }\n"
-                                           "</style></head><body style=\" font-family:\'Microsoft YaHei UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-                                           "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.textEdit_5.setHtml(_translate("MainWindow",
-                                           "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                           "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-                                           "p, li { white-space: pre-wrap; }\n"
-                                           "</style></head><body style=\" font-family:\'Microsoft YaHei UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-                                           "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.textEdit_6.setHtml(_translate("MainWindow",
-                                           "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                           "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-                                           "p, li { white-space: pre-wrap; }\n"
-                                           "</style></head><body style=\" font-family:\'Microsoft YaHei UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-                                           "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        self.textEdit.setHtml(_translate("MainWindow",
-                                         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                         "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-                                         "p, li { white-space: pre-wrap; }\n"
-                                         "</style></head><body style=\" font-family:\'Microsoft YaHei UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-                                         "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
-        font = self.label.font()
-        font.setPointSize(10)
-        self.label.setFont(font)
         self.label.setText(_translate("MainWindow", "监测坐标范围（十进制度）:"))
         font = self.label_6.font()
         font.setPointSize(15)

@@ -16,10 +16,9 @@ class NdviThread(QThread):
 
     def __init__(self):
         super().__init__()
+        self.area = None
         self.start_date = None
         self.end_date = None
-        self.spatial_tuple = tuple()
-        self.product = None
 
     my_str = pyqtSignal(str)  # 创建任务信号
 
@@ -47,5 +46,5 @@ class NdviThread(QThread):
         nc.hdf_conversion_tif()
         nc.tif_conversion_ndvi()
         nc.ndvi_combination()
-        self.my_str.emit()
+        self.my_str.emit("所有ndvi均已计算完成！")
 

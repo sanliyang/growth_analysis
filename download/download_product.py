@@ -18,7 +18,7 @@ class DownloadProduct:
         self.headers = None
 
     def get_token(self):
-        with open(r"D:\grow_anay\growth_analysis\download\base\token.txt", 'r') as f:
+        with open("./download/base/token.txt", 'r') as f:
             self.token = f.read()
 
     def set_headers(self):
@@ -58,11 +58,9 @@ if __name__ == '__main__':
     dp = DownloadProduct()
     dp.get_token()
     dp.set_headers()
-    file_url_list = [
-            'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD35_L2/2023/033/MOD35_L2.A2023033.0250.061.2023033131723.hdf'
-        ]
-    time_start_date = "2023-02-01"
-    time_end_date = "2023-02-15"
-    spatial_tuple = (110, 31, 117, 37)
+    file_url_list = ['https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h22v03.061.2023102040359.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h23v03.061.2023102034515.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h24v03.061.2023102040732.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h24v04.061.2023102034341.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h25v03.061.2023102035307.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h25v04.061.2023102044351.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h25v05.061.2023102040148.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h26v03.061.2023102041318.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h26v04.061.2023102032451.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h26v05.061.2023102035240.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h26v06.061.2023102034707.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h27v04.061.2023102034211.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h27v05.061.2023102050757.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h27v06.061.2023102053301.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h28v04.061.2023102033501.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h28v05.061.2023102035953.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h28v06.061.2023102040734.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h29v05.061.2023102040320.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h29v06.061.2023102043950.hdf', 'https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD09GQ/2023/100/MOD09GQ.A2023100.h30v06.061.2023102034341.hdf']
+    time_start_date = "2023-04-10"
+    time_end_date = "2023-04-10"
+    spatial_tuple = (96, 54, 136, 23)
     for file_url in file_url_list:
         dp.download_file(file_url, time_start_date, time_end_date, spatial_tuple)

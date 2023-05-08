@@ -36,10 +36,11 @@ class NdviCombination:
         if not os.path.exists(self.tif_red):
             os.makedirs(self.tif_red)
 
-        hdf_list = list(pathlib.Path(self.hdf_path).glob("*"))
+        hdf_list = list(pathlib.Path(self.hdf_path).glob("*.hdf"))
         # 这里需要对进行ndvi的数据进行过滤
         for hdf_file in hdf_list:
-            if not hdf_file.__str__().startwith("MOD09GQ"):
+            hdf_name = os.path.basename(hdf_file)
+            if not hdf_name.startswith("MOD09GQ"):
                 continue
             conver_obj = HDF2TIFF(hdf_file.__str__())
             conver_obj.open()
@@ -60,7 +61,7 @@ class NdviCombination:
 
     def tif_conversion_ndvi(self):
 
-        red_file_list = list(pathlib.Path(self.tif_red).glob("*"))
+        red_file_list = list(pathlib.Path(self.tif_red).glob("*.tif"))
         self.ndvi_hash = os.path.join(os.path.dirname(self.hdf_path), "ndvi_hash")
         if not os.path.exists(self.ndvi_hash):
             os.makedirs(self.ndvi_hash)
@@ -72,30 +73,36 @@ class NdviCombination:
             na.extract_ndvi_2_tif()
 
     def ndvi_combination(self):
-        ndvi_hash_file_list = list(pathlib.Path(self.ndvi_hash).glob("*"))
+        ndvi_hash_file_list = list(pathlib.Path(self.ndvi_hash).glob("*.tif"))
         # 判断输出文件所在文件夹是否存在，同时需要对输出文件的名字进行确认
         root_path = os.path.dirname(self.hdf_path)
-        root_path_name = pathlib.Path(root_path).name
-
         single_ndvi_path = os.path.join(root_path, "single_ndvi")
         if not os.path.exists(single_ndvi_path):
             os.makedirs(single_ndvi_path)
 
-        single_ndvi_file_path_with_name = os.path.join(single_ndvi_path, root_path_name)
-        single_ndvi_file_path_with_name_with_suffix = f"{single_ndvi_file_path_with_name}.tif"
-
         # todo 这里进行单天分批次进行计算并处理
+        one_day_file_dict = {}
         # 将数组中的元素进行按天分组， 同时根据天对单天ndvi进行命名， 格式为： NDVI_max2023100_2023100
         for file_name_with_path in ndvi_hash_file_list:
-            regex = r"\d{4}-(0?[1-9]|[1-2][0-9]|3[0-6][0-6]|3[0-5][0-9]|{}[0-9])".format()
-            re.match(regex, file_name_with_path)
+            file_name_with_suffix = os.path.basename(file_name_with_path)
+            file_product_date = file_name_with_suffix.split(".")[1][1:]
+            if file_product_date not in one_day_file_dict.keys():
+                one_day_file_dict[file_product_date] = [file_name_with_path]
+            else:
+                one_day_file_dict[file_product_date].append(file_name_with_path)
 
-        sdic = SingeDayImageCombine(ndvi_hash_file_list, single_ndvi_file_path_with_name_with_suffix)
-        sdic.merge_tiff()
+        for key, value in one_day_file_dict.items():
+            key_path = os.path.join(single_ndvi_path, key)
+            if not os.path.exists(key_path):
+                os.makedirs(key_path)
+            single_ndvi_file_path_with_name_with_suffix = os.path.join(key_path, f"NDVI_max{key}_{key}.tif")
+            sdic = SingeDayImageCombine(value, single_ndvi_file_path_with_name_with_suffix)
+            sdic.merge_tiff()
+            sdic.cut_tif()
 
 
 if __name__ == '__main__':
-    hdf_path = r"D:\grow_anay\growth_analysis\data\download\2023-02-01_2023-02-15_(110, 31, 117, 37)\hdf"
+    hdf_path = r"D:\grow_anay\growth_analysis\data\download\2023-04-10_2023-04-10_(96, 54, 136, 23)\hdf"
 
     nc = NdviCombination(hdf_path)
     nc.hdf_conversion_tif()
