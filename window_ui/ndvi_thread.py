@@ -45,6 +45,6 @@ class NdviThread(QThread):
         nc = NdviCombination(hdf_path)
         nc.hdf_conversion_tif()
         nc.tif_conversion_ndvi()
-        nc.ndvi_combination()
+        nc.ndvi_combination(self.area)
         self.my_str.emit("所有ndvi均已计算完成！")
 

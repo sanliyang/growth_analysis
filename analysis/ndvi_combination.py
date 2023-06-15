@@ -72,7 +72,7 @@ class NdviCombination:
             na = NDVIAnalysis(nir_file, red_file.__str__(), self.ndvi_hash)
             na.extract_ndvi_2_tif()
 
-    def ndvi_combination(self):
+    def ndvi_combination(self, area):
         ndvi_hash_file_list = list(pathlib.Path(self.ndvi_hash).glob("*.tif"))
         # 判断输出文件所在文件夹是否存在，同时需要对输出文件的名字进行确认
         root_path = os.path.dirname(self.hdf_path)
@@ -80,7 +80,6 @@ class NdviCombination:
         if not os.path.exists(single_ndvi_path):
             os.makedirs(single_ndvi_path)
 
-        # todo 这里进行单天分批次进行计算并处理
         one_day_file_dict = {}
         # 将数组中的元素进行按天分组， 同时根据天对单天ndvi进行命名， 格式为： NDVI_max2023100_2023100
         for file_name_with_path in ndvi_hash_file_list:
@@ -98,7 +97,7 @@ class NdviCombination:
             single_ndvi_file_path_with_name_with_suffix = os.path.join(key_path, f"NDVI_max{key}_{key}.tif")
             sdic = SingeDayImageCombine(value, single_ndvi_file_path_with_name_with_suffix)
             sdic.merge_tiff()
-            sdic.cut_tif()
+            sdic.cut_tif(area)
 
 
 if __name__ == '__main__':

@@ -22,9 +22,10 @@ class SingeDayImageCombine:
 
         gdal.Warp(self.no_cut_image, tif_file_set)
 
-    def cut_tif(self):
+    def cut_tif(self, area):
         # 定义裁剪区域的四至坐标
-        xmin, ymin, xmax, ymax = (96, 54, 136, 23)  # 例如，这里是以0,0为左上角，100,100为右下角的裁剪区域
+        # xmin, ymin, xmax, ymax = (96, 54, 136, 23)  # 例如，这里是以0,0为左上角，100,100为右下角的裁剪区域
+        xmin, ymin, xmax, ymax = area  # 例如，这里是以0,0为左上角，100,100为右下角的裁剪区域
 
         # 读取输入影像的信息
         ds = gdal.Open(self.no_cut_image)
